@@ -5,6 +5,10 @@
 const {Router, response} = require('express');
 // подключаем bcript - библиотека для шифрования и сравнения паролей
 const bcript = require('bcryptjs');
+// конфигурация из default.json для получения jwtSecret
+const config = require('config');
+// JWT (Json Web Token) - библиотека работы с JWT
+const jwt = require('jsonwebtoken');
 // библиотека валидации данных, будем использовать при проверке email и password
 const {check, validationResult} = require('express-validator');
 // создаем константу роутер
@@ -127,6 +131,19 @@ router.post('/login',
         }
 
         // ДАЛЕЕ АВТОРИЗАЦИЯ ЧЕРЕЗ JWT ТОКЕН!!!!
+        
+        // формеруем токен
+        const token = jwt.sign(
+            // 1 параметр - зашифровываем данные, которые будут передаваться
+            { userId: user.id },
+            // 2 параметр - строка, которая была указана в jwtSecret (default.json)
+            config.get('jwtSecret'),
+            // 3 параметр - время жизни токена (рекомендовано на 1 час)
+            {expiresIn: '1h'}
+        )
+
+        // отправляем токен на клиент
+        response.status(200).json({ token: token, userId: user.id });
        
     } catch {
         return response.status(500).json({ message: 'Что-то пошло не так, попробуйте снова'})
