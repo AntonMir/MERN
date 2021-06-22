@@ -27,14 +27,19 @@ router.post(
     '/register',
     [
         // 2 параметр для валидация email и password через express-validator
-        check('mail', 'Некорректный email').isEmail(),
+        check('email', 'Некорректный email').isEmail(),
         check('password', 'Минимальная длинна пароля 6 символов').isLength({ min: 6 })
     ],
     async (request, response) => {
 
     try {
+
         // таким способом валидатор проверяет входящие поля из 2 параметра (router.post)
         const errors = validationResult(request);
+        console.log('---', '__________________________________________________________________________');
+        console.log('>>>', 'RegisterValidErrors - ', errors);
+        console.log('>>>', 'RegisterRequestBody - ', request.body);
+        console.log('---', '__________________________________________________________________________');
         
         // добавляем проверку если erros не пустой (значит, что есть ошибки)
         if (!errors.isEmpty()) {
@@ -44,7 +49,6 @@ router.post(
                 message: 'Некорректные данные при регистрации'
             })
         }
-
         // деструктуризацией получаем с фронта присланные Почту и Пароль
         const {email, password} = request.body;
         
@@ -84,7 +88,7 @@ router.post('/login',
     [
         // 2 параметр для валидация email и password через express-validator
         // normalizeEmail() - нормализация входящего мыла(немного не понял =) )
-        check('mail', 'Введите корректный email').normalizeEmail().isEmail(),
+        check('email', 'Введите корректный email').normalizeEmail().isEmail(),
         // .exists() - проверяет есть ли пароль вообще, пароль должен существовать
         check('password', 'Введите пароль').exists()
     ],

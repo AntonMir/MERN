@@ -13,6 +13,14 @@ export const useHttp = () => {
     const request = useCallback(async (url, method = 'GET', body = null, headers = {}) => {
         setLoading(true);
         try {
+
+            // если есть body, переводим его в строку для передачи на сервер
+            // и чтоб сервер понял, что мы передали JSON, указываем явно тип в headers
+            if(body) {
+                body = JSON.stringify(body);
+                headers['Content-Type'] = 'application/json';
+            }
+
             const response = await fetch(url, { method, body, headers });
             const data = await response.json();
 
@@ -24,15 +32,16 @@ export const useHttp = () => {
 
             return data;
         } catch (error) {
+            console.log('---', 'catch ', error.message);
             setLoading(false);
             setError(error.message);
             throw error;
         }
     }, [])
 
-    const clearError = () => {
+    const clearError = useCallback(() => {
         setError(null);
-    }
+    }, [])
 
     return { loading, request, error, clearError };
 }

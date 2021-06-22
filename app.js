@@ -16,6 +16,8 @@ const routers = require('./routes/auth.routes.js');
 // 1.результат работы функции express - наш будущий сервер
 const app = express();
 
+app.use(express.json({ extended: true}))
+
 // 3. тут будет аутентификация
 app.use('/api/auth', routers);
 
